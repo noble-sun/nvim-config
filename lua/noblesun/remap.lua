@@ -1,5 +1,5 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+-- vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- when selected something in visual mode, press J or K to move it and ident
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -56,8 +56,64 @@ vim.keymap.set({"n", "v"}, "<leader>tc", vim.cmd.tabclose)
 -- move bewteen the last file open in the buffer
 vim.keymap.set("n", "<leader><leader>",  "<c-^>")
 
+-- -- Show all diagnostics on current line in floating window
+vim.api.nvim_set_keymap(
+  'n', 'of', ':lua vim.diagnostic.open_float()<CR>', 
+  { noremap = true, silent = true }
+)
+-- -- Go to next diagnostic (if there are multiple on the same line, only shows
+-- -- one at a time in the floating window)
+vim.api.nvim_set_keymap(
+  'n', 'ofn', ':lua vim.diagnostic.goto_next()<CR>',
+  { noremap = true, silent = true }
+)
+-- -- Go to prev diagnostic (if there are multiple on the same line, only shows
+-- -- one at a time in the floating window)
+vim.api.nvim_set_keymap(
+  'n', 'ofp', ':lua vim.diagnostic.goto_prev()<CR>',
+  { noremap = true, silent = true }
+)
 
 -- ADDITIONAL POSSIBLE MAPPINGS
 -- manually resize pane
 -- when going to class definition, open as a right split
 -- move panes from right to left and up and down (do this for tmux panes is also nice)
+
+
+
+
+
+
+
+
+
+
+-- vim.diagnostic.config({
+--   virtual_text = false, -- Turn off inline diagnostics
+-- })
+-- 
+-- -- Use this if you want it to automatically show all diagnostics on the
+-- -- current line in a floating window. Personally, I find this a bit
+-- -- distracting and prefer to manually trigger it (see below). The
+-- -- CursorHold event happens when after `updatetime` milliseconds. The
+-- -- default is 4000 which is much too long
+-- --vim.cmd('autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()')
+-- vim.o.updatetime = 300
+-- 
+-- -- Show all diagnostics on current line in floating window
+-- vim.api.nvim_set_keymap(
+--   'n', '<Leader>d', ':lua vim.diagnostic.open_float()<CR>', 
+--   { noremap = true, silent = true }
+-- )
+-- -- Go to next diagnostic (if there are multiple on the same line, only shows
+-- -- one at a time in the floating window)
+-- vim.api.nvim_set_keymap(
+--   'n', '<Leader>n', ':lua vim.diagnostic.goto_next()<CR>',
+--   { noremap = true, silent = true }
+-- )
+-- -- Go to prev diagnostic (if there are multiple on the same line, only shows
+-- -- one at a time in the floating window)
+-- vim.api.nvim_set_keymap(
+--   'n', '<Leader>p', ':lua vim.diagnostic.goto_prev()<CR>',
+--   { noremap = true, silent = true }
+-- )
