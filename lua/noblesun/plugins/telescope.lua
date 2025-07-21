@@ -8,8 +8,6 @@ return {
   config = function()
     local telescope = require('telescope')
     local actions = require('telescope.actions')
-    local builtin = require('telescope.builtin')
-
 
     telescope.setup({
       defaults = {
@@ -41,6 +39,6 @@ return {
     vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
-    vim.keymap.set('n', '<leader>gr', require('telescope.builtin').lsp_references, { desc = '[G]et [R]eferences' })
+    --vim.keymap.set('n', '<leader>gr', require('telescope.builtin').lsp_references, { desc = '[G]et [R]eferences' })
   end
 }
