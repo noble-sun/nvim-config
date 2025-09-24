@@ -83,41 +83,49 @@ return {
 
 
         -- Setup servers
-        local lspconfig = require("lspconfig")
+        -- local lspconfig = require("lspconfig")
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
         local capabilities = cmp_nvim_lsp.default_capabilities()
 
         -- Config lsp servers here
         -- lua_ls
-        lspconfig.lua_ls.setup({
-            capabilities = capabilities,
-            settings = {
-                Lua = {
-                    diagnostics = {
-                        globals = { "vim" },
-                    },
-                    completion = {
-                        callSnippet = "Replace",
-                    },
-                    workspace = {
-                        library = {
-                            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                            [vim.fn.stdpath("config") .. "/lua"] = true,
-                        },
-                    },
+        vim.lsp.config('lua_ls', {
+          capabilities = capabilities,
+          settings = {
+            Lua = {
+              diagnostics = {
+                globals = { "vim" },
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              workspace = {
+                library = {
+                  [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                  [vim.fn.stdpath("config") .. "/lua"] = true,
                 },
+              },
             },
+          },
         })
 
+      -- RUBY_LSP only works if dependencies libs of any given project are installed
+      -- locally. So if using docker, you may need to install some libs like postgresql-devel
+      -- on your local machine because ruby_lsp runs bundle for the project
+      -- Also, the rename command is not working like it should
+      vim.lsp.config('ruby_lsp', {
+        capabilities = capabilities
+      })
 
-      -- Ruby LSP is not working! =(
       -- solargraph is installed globally on the machine, and it still not works
       -- ruby and solargraph installed with rbenv
       -- which solargraph: /home/noblesun/.rbenv/shims/solargraph
-      lspconfig.solargraph.setup({
-        cmd = { "solargraph", "stdio" },
-        capabilities = capabilities
-      })
+      -- vim.lsp.config('solargraph', {
+      --   cmd = { "solargraph", "stdio" },
+      --   capabilities = capabilities
+      -- })
+      --
+      -- vim.lsp.enable('solargraph')
 
     end,
 }

@@ -40,16 +40,18 @@ return {
 
 ### LSPs?
 
-Try again later when I figure it out how to setup a ruby lsp that actually works.
-At least servers for other languages do work like they should.
-
 So to install new servers for other languages:
  - Go to *mason.lua* on 'lua/noblesun/plugins/lsp/' to list the server name on *mason_lspconfig* to ensure the server is installed.
     - Or inside neovim open mason with `:Mason` and install the server manually.
  - Configure the lspconfig for the server on 'lua/noblesun/plugins/lsp/lspconfig.lua'
     ```lua
     -- basic configuration
-    require('lspconfig').server_name.setup({
+    vim.lsp.config("lsp_name", {
         capabilities = require("cmp_nvim_lsp").default_capabilities()
     })
     ```
+
+**ruby_lsp** works with a few caveats:
+ - smart rename (<leader>rn) is not capturing the buffer to rename
+ - references (<leader>gr) gets a bit mixed up on what capture and doesn't really understand local from global variables.
+ - It only worked after some dependencies from the bundle gems were installed locally, like the `postgresql-devel` for the `pg` gem

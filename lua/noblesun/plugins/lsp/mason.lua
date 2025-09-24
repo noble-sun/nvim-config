@@ -28,14 +28,14 @@ return {
         mason_lspconfig.setup({
             automatic_enable = true,
             ensure_installed = {
-                "lua_ls",
+                "lua_ls", "ruby_lsp"
             },
 
         })
 
         mason_tool_installer.setup({
             ensure_installed = {
-                "stylua",   -- lua formatter
+                "stylua",
             },
         })
     end,
