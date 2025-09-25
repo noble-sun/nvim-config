@@ -127,5 +127,8 @@ return {
       --
       -- vim.lsp.enable('solargraph')
 
+      vim.lsp.config('gopls', {
+        capabilities = capabilities
+      })
     end,
 }

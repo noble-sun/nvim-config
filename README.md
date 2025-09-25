@@ -55,3 +55,6 @@ So to install new servers for other languages:
  - smart rename (<leader>rn) is not capturing the buffer to rename
  - references (<leader>gr) gets a bit mixed up on what capture and doesn't really understand local from global variables.
  - It only worked after some dependencies from the bundle gems were installed locally, like the `postgresql-devel` for the `pg` gem
+
+#### ToDo
+ - Configure code formatter for languages

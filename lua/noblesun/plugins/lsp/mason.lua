@@ -28,7 +28,7 @@ return {
         mason_lspconfig.setup({
             automatic_enable = true,
             ensure_installed = {
-                "lua_ls", "ruby_lsp"
+                "lua_ls", "ruby_lsp", "gopls"
             },
 
         })
