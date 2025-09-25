@@ -58,7 +58,7 @@ vim.keymap.set("n", "<leader><leader>",  "<c-^>")
 
 -- -- Show all diagnostics on current line in floating window
 vim.api.nvim_set_keymap(
-  'n', 'of', ':lua vim.diagnostic.open_float()<CR>', 
+  'n', 'of', ':lua vim.diagnostic.open_float()<CR>',
   { noremap = true, silent = true }
 )
 -- -- Go to next diagnostic (if there are multiple on the same line, only shows
