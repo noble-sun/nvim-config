@@ -112,9 +112,11 @@ return {
       -- RUBY_LSP only works if dependencies libs of any given project are installed
       -- locally. So if using docker, you may need to install some libs like postgresql-devel
       -- on your local machine because ruby_lsp runs bundle for the project
-      -- Also, the rename command is not working like it should
       vim.lsp.config('ruby_lsp', {
-        capabilities = capabilities
+        capabilities = capabilities,
+        cmd = { vim.fn.expand("~/.rbenv/shims/ruby-lsp") },
+        -- Deixar o ruby-lsp habilitar todas as features automaticamente
+        root_dir = vim.fs.root(0, { "Gemfile", ".git" }),
       })
 
       -- solargraph is installed globally on the machine, and it still not works

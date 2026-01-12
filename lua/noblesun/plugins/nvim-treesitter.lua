@@ -10,6 +10,13 @@ return {
   },
   config = function()
     local treesitter = require("nvim-treesitter.configs")
+    local ts_context = require("treesitter-context")
+
+    -- Limita o contexto sticky no topo da tela
+    ts_context.setup({
+      max_lines = 10, -- máximo de linhas no topo (ajuste conforme preferir)
+      trim_scope = "outer", -- remove linhas internas primeiro (ex: comentários)
+    })
 
     treesitter.setup({
       -- A list of parser names, or "all" (the listed parsers MUST always be installed)

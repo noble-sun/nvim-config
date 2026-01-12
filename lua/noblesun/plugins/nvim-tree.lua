@@ -13,5 +13,6 @@ return {
     vim.opt.termguicolors = true
 
     vim.keymap.set('n', "<c-\\>", vim.cmd.NvimTreeToggle )
+    vim.keymap.set('n', "<leader>f", vim.cmd.NvimTreeFindFile )
   end,
 }

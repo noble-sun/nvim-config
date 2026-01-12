@@ -28,7 +28,8 @@ return {
         mason_lspconfig.setup({
             automatic_enable = true,
             ensure_installed = {
-                "lua_ls", "ruby_lsp", "gopls"
+                "lua_ls", "gopls"
+                -- ruby_lsp removido: usando versão do rbenv/bundle
             },
 
         })

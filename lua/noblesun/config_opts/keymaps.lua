@@ -56,6 +56,13 @@ vim.keymap.set({"n", "v"}, "<leader>tc", vim.cmd.tabclose)
 -- move bewteen the last file open in the buffer
 vim.keymap.set("n", "<leader><leader>",  "<c-^>")
 
+-- copy relative path to clipboard
+vim.keymap.set('n', '<leader>cp', function()
+  local path = vim.fn.expand('%')
+  vim.fn.setreg('+', path)
+  print('Copiado: ' .. path)
+end, { desc = 'Copiar caminho relativo' })
+
 -- -- Show all diagnostics on current line in floating window
 vim.api.nvim_set_keymap(
   'n', 'of', ':lua vim.diagnostic.open_float()<CR>',
@@ -74,6 +81,69 @@ vim.api.nvim_set_keymap(
   { noremap = true, silent = true }
 )
 
+-- Window resize mode - press <leader>w to enter, then use >, <, +, - to resize
+-- Auto-exits after 250ms of inactivity (like tmux)
+_G.resize_mode_active = false
+_G.resize_mode_timer = nil
+
+function ExitResizeMode()
+  if not _G.resize_mode_active then
+    return
+  end
+
+  if _G.resize_mode_timer then
+    vim.fn.timer_stop(_G.resize_mode_timer)
+    _G.resize_mode_timer = nil
+  end
+
+  vim.keymap.del('n', '>')
+  vim.keymap.del('n', '<')
+  vim.keymap.del('n', '+')
+  vim.keymap.del('n', '-')
+  _G.resize_mode_active = false
+  print("")
+end
+
+function ResetResizeTimer()
+  if _G.resize_mode_timer then
+    vim.fn.timer_stop(_G.resize_mode_timer)
+  end
+  _G.resize_mode_timer = vim.fn.timer_start(500, ExitResizeMode)
+end
+
+function EnterResizeMode()
+  if _G.resize_mode_active then
+    return
+  end
+
+  _G.resize_mode_active = true
+  print("-- RESIZE MODE -- (> increase width, < decrease width, + increase height, - decrease height)")
+
+  vim.keymap.set('n', '>', function()
+    vim.cmd('vertical resize +5')
+    ResetResizeTimer()
+  end, { nowait = true })
+
+  vim.keymap.set('n', '<', function()
+    vim.cmd('vertical resize -5')
+    ResetResizeTimer()
+  end, { nowait = true })
+
+  vim.keymap.set('n', '+', function()
+    vim.cmd('resize +2')
+    ResetResizeTimer()
+  end, { nowait = true })
+
+  vim.keymap.set('n', '-', function()
+    vim.cmd('resize -2')
+    ResetResizeTimer()
+  end, { nowait = true })
+
+  ResetResizeTimer()
+end
+
+vim.keymap.set('n', '<leader>w', EnterResizeMode)
+
 -- ADDITIONAL POSSIBLE MAPPINGS
 -- manually resize pane
 -- when going to class definition, open as a right split
@@ -88,7 +158,7 @@ vim.api.nvim_set_keymap(
 
 
 
--- vim.diagnostic.config({
+  -- vim.diagnostic.config({
 --   virtual_text = false, -- Turn off inline diagnostics
 -- })
 -- 
