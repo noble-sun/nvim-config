@@ -1,14 +1,11 @@
 return {
     "neovim/nvim-lspconfig",
-    -- opts = {
-    --   servers = {
-    --     ruby_lsp = {
-    --       mason = false,
-    --       cmd = { vim.fn.expand("/home/noblesun/.rbenv/shims/ruby-lsp")}
-    --     }
-    --   }
-    -- },
-    event = { "BufReadPre", "BufNewFile" },
+    -- lazy = false (em vez de event = BufReadPre/BufNewFile): precisa correr
+    -- no startup, antes do primeiro arquivo da linha de comando ser lido —
+    -- senão o autocmd de FileType registrado por vim.lsp.enable() chega
+    -- depois que o FileType do próprio buffer de abertura já disparou, e o
+    -- LSP nunca anexa nesse primeiro arquivo.
+    lazy = false,
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
         -- "saghen/blink.cmp",
@@ -87,8 +84,14 @@ return {
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
         local capabilities = cmp_nvim_lsp.default_capabilities()
 
-        -- Config lsp servers here
-        -- lua_ls
+        -- Sem Mason: cada server só é habilitado se o binário existir no
+        -- $PATH no momento em que o nvim abre. Ferramentas de editor
+        -- (lua-language-server) vêm de home.nix, globais. Ferramentas de
+        -- projeto (gopls, ruby-lsp, etc.) vêm do shell.nix de cada projeto,
+        -- carregado via direnv — assim abrir o nvim fora de um projeto
+        -- nunca tenta subir um LSP que não existe ali.
+
+        -- lua_ls: ferramenta de editor, pacote nixpkgs global
         vim.lsp.config('lua_ls', {
           capabilities = capabilities,
           settings = {
@@ -108,29 +111,26 @@ return {
             },
           },
         })
+        -- ruby_lsp: vem do shell.nix do projeto (ruby + bundler + gem ruby-lsp)
+        vim.lsp.config('ruby_lsp', {
+          capabilities = capabilities,
+          cmd = { "ruby-lsp" },
+          root_dir = vim.fs.root(0, { "Gemfile", ".git" }),
+        })
 
-      -- RUBY_LSP only works if dependencies libs of any given project are installed
-      -- locally. So if using docker, you may need to install some libs like postgresql-devel
-      -- on your local machine because ruby_lsp runs bundle for the project
-      vim.lsp.config('ruby_lsp', {
-        capabilities = capabilities,
-        cmd = { vim.fn.expand("~/.rbenv/shims/ruby-lsp") },
-        -- Deixar o ruby-lsp habilitar todas as features automaticamente
-        root_dir = vim.fs.root(0, { "Gemfile", ".git" }),
-      })
+        -- gopls: vem do shell.nix do projeto (go + gopls)
+        vim.lsp.config('gopls', {
+          capabilities = capabilities
+        })
 
-      -- solargraph is installed globally on the machine, and it still not works
-      -- ruby and solargraph installed with rbenv
-      -- which solargraph: /home/noblesun/.rbenv/shims/solargraph
-      -- vim.lsp.config('solargraph', {
-      --   cmd = { "solargraph", "stdio" },
-      --   capabilities = capabilities
-      -- })
-      --
-      -- vim.lsp.enable('solargraph')
-
-      vim.lsp.config('gopls', {
-        capabilities = capabilities
-      })
+        if vim.fn.executable("lua-language-server") == 1 then
+          vim.lsp.enable('lua_ls')
+        end
+        if vim.fn.executable("ruby-lsp") == 1 then
+          vim.lsp.enable('ruby_lsp')
+        end
+        if vim.fn.executable("gopls") == 1 then
+          vim.lsp.enable('gopls')
+        end
     end,
 }

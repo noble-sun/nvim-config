@@ -38,23 +38,52 @@ return {
 }
 ```
 
-### LSPs?
+### LSPs? (sem Mason, pensado para NixOS)
 
-So to install new servers for other languages:
- - Go to *mason.lua* on 'lua/noblesun/plugins/lsp/' to list the server name on *mason_lspconfig* to ensure the server is installed.
-    - Or inside neovim open mason with `:Mason` and install the server manually.
- - Configure the lspconfig for the server on 'lua/noblesun/plugins/lsp/lspconfig.lua'
+Essa configuração **não usa Mason**. Em um sistema NixOS os binários dos LSP
+servers já são instalados pelo próprio Nix, então deixar o Mason baixar uma
+segunda cópia só duplica trabalho (e geralmente nem funciona bem, por conta
+do sandboxing/FHS do Nix). Em vez disso, `lspconfig.lua` assume que o binário
+do server já está disponível no `$PATH` quando o nvim abre, e só chama
+`vim.lsp.enable(...)` se `vim.fn.executable("algum-binario") == 1`.
+
+Isso divide a origem dos servers em duas categorias:
+
+ - **Ferramentas de editor** (ex: `lua-language-server`): instaladas
+   globalmente via `home.nix`, disponíveis em qualquer shell.
+ - **Ferramentas de projeto** (ex: `gopls`, `ruby-lsp`): instaladas no
+   `shell.nix`/`flake.nix` de cada projeto e carregadas via `direnv` ao entrar
+   na pasta. Assim, abrir o nvim fora de um projeto nunca tenta subir um LSP
+   que não existe ali — o `executable()` simplesmente falha e o `enable` é
+   pulado.
+
+Para instalar um novo server:
+ 1. Garanta que o binário dele esteja no `$PATH` (via `home.nix` se for algo
+    usado em qualquer projeto, ou via `shell.nix`/`flake.nix` do projeto +
+    `direnv` se for específico de uma stack).
+ 2. Configure o server em `lua/noblesun/plugins/lsp/lspconfig.lua`:
     ```lua
-    -- basic configuration
     vim.lsp.config("lsp_name", {
-        capabilities = require("cmp_nvim_lsp").default_capabilities()
+        capabilities = capabilities,
     })
+
+    if vim.fn.executable("binario-do-lsp") == 1 then
+      vim.lsp.enable("lsp_name")
+    end
     ```
 
-**ruby_lsp** works with a few caveats:
- - smart rename (<leader>rn) is not capturing the buffer to rename
- - references (<leader>gr) gets a bit mixed up on what capture and doesn't really understand local from global variables.
- - It only worked after some dependencies from the bundle gems were installed locally, like the `postgresql-devel` for the `pg` gem
+Note também que esse plugin usa `lazy = false` em vez de carregar sob um
+evento (`BufReadPre`/`BufNewFile`): ele precisa correr no startup, antes do
+primeiro arquivo passado na linha de comando disparar seu próprio evento
+`FileType` — senão o autocmd registrado por `vim.lsp.enable()` chega tarde e
+o LSP nunca anexa nesse primeiro buffer.
+
+**ruby_lsp** funciona com algumas ressalvas:
+ - smart rename (<leader>rn) não está capturando o buffer para renomear.
+ - references (<leader>gr) se confunde um pouco sobre o que capturar e não
+   distingue bem variável local de global.
+ - Só funciona depois que algumas dependências das gems do bundle são
+   instaladas localmente, como `postgresql-devel` para a gem `pg`.
 
 #### ToDo
  - Configure code formatter for languages
